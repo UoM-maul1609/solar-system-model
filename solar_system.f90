@@ -259,7 +259,7 @@
 
 
 	! define a variable TIME!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	call check( nf90_def_var(ncid, "time", nf90_double, &
+	call check( nf90_def_var(ncid, "time", nf90_float, & ! was nf90_double
 					  (/x_dimid/), varid) )
 	! get id to a_dimid
 	call check( nf90_inq_varid(ncid, "time", a_dimid) )
@@ -268,7 +268,7 @@
 
 
 	! define a variable POS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	call check( nf90_def_var(ncid, "pos", nf90_double, &
+	call check( nf90_def_var(ncid, "pos", nf90_float, &
 					  (/j_dimid, i_dimid,x_dimid/), varid) )
 	! get id to a_dimid
 	call check( nf90_inq_varid(ncid, "pos", a_dimid) )
@@ -277,7 +277,7 @@
 
 
 	! define a variable VEL!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	call check( nf90_def_var(ncid, "vel", nf90_double, &
+	call check( nf90_def_var(ncid, "vel", nf90_float, &
 					  (/j_dimid, i_dimid,x_dimid/), varid) )
 	! get id to a_dimid
 	call check( nf90_inq_varid(ncid, "vel", a_dimid) )

@@ -3,14 +3,21 @@
 PLATFORM = LINUX
 DEBUG =#-gstabs -fbounds-check #-pg
 MPI    =#-DMPI1
-OPT    =-O3 
+OPT    =-O3  -fopenmp-simd -fopenmp 
 
+# these three lines should be edited for your system. On systems 
+# that do not have separate fortran and c libraries, set NETCDF_FOR and NETCDF_C
+# to the same, and set NETCDF_LIB to -lnetcdf (i.e. without the extra f)
+NETCDF_FOR=/Users/mccikpc2/Dropbox/programming/netcdf-4.4.4-mac/
+NETCDF_C=/Users/mccikpc2/Dropbox/programming/netcdf-4.4.1.1-mac/
+NETCDF_LIB=-lnetcdff 
 
 
 ifeq ($(strip $(PLATFORM)),$(strip LINUX))
-NETCDFLIB=-L ../netcdf-4.4.4-mac/lib/  \
-          -L ../netcdf-4.4.1.1-mac/lib/ #/usr/lib64/
-NETCDFMOD= ../netcdf-4.4.4-mac/include/   #/usr/lib64/gfortran/modules/
+NETCDFLIB=-L ${NETCDF_FOR}/lib/  \
+          -L ${NETCDF_C}/lib/  #/usr/lib64/
+NETCDFMOD= ${NETCDF_FOR}/include/ #/usr/lib64/gfortran/modules/
+
 FOR = gfortran -c  #-fno-underscoring 
 FOR2 = gfortran  #-fno-underscoring 
 AR = ar 
@@ -36,7 +43,7 @@ FFLAGS2 = $(SIXTY_FOUR_F) $(OPT) $(DEBUG) -o #
 
 main.exe	:  odelib.a  solar_system.$(OBJ) 
 	$(FOR2) $(FFLAGS2)main.exe solar_system.$(OBJ)   \
-	 -lm odelib.a ${NETCDFLIB} -I ${NETCDFMOD} -lnetcdff -lnetcdf $(DEBUG) 
+	 -lm odelib.a ${NETCDFLIB} -I ${NETCDFMOD} ${NETCDF_LIB} $(DEBUG) 
 
 odelib.a	:   d1mach.$(OBJ) vode.$(OBJ) dlinpk.$(OBJ) acdc.$(OBJ) colmod.$(OBJ) opkdmain.$(OBJ) opkda1.$(OBJ) opkda2.$(OBJ)
 	$(AR) rc odelib.a d1mach.$(OBJ) vode.$(OBJ) dlinpk.$(OBJ) acdc.$(OBJ) colmod.$(OBJ) opkdmain.$(OBJ) opkda1.$(OBJ) opkda2.$(OBJ); $(RANLIB) odelib.a
