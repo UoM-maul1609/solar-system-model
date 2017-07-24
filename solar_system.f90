@@ -114,7 +114,8 @@
 	real(dp), dimension(6*n_bodies) :: rpar
 	integer(i4b), dimension(6*n_bodies) :: ipar
 
-	real(dp) :: tout, dt=5e0_dp*86400.e0_dp, rtol, tfinal
+	real(dp) :: tout, dt=5e0_dp*86400.e0_dp, rtol, tfinal, interval_io, &
+				tt_last
 	integer(i4b) :: itol, itask, istate, iopt, ng, & 
 								   lrw, liw, mf, mflag
 	real(dp), allocatable, dimension(:) :: rwork 
@@ -134,7 +135,7 @@
 	character (len=200) :: nmlfile = ' '
 	namelist /initial_state/ x,y,z,ux,uy,uz, gm
 	namelist /run_vars/ outputfile01,run_forward_in_time, general_relativity, &
-					  dt,tfinal, interact
+					  dt,tfinal, interval_io, interact
 
 	external  solar01, jsolar01
 
@@ -359,6 +360,8 @@
 	icur=1
 	isav=1
 	istate=1
+	interval_io=interval_io*365.25_dp*86400._dp ! put in seconds
+	tt_last=-interval_io
 	do while (tt.lt.tfinal)
 	 do while(tt.lt.tout)
 	   call dvode(solar01,neq,ysol,tt,tout,itol,rtol1,atol,itask,istate, &
@@ -372,8 +375,15 @@
 	 pos_save(1:3,1:2,1:n_bodies,isav:isav)= &
 		 reshape(ysol(1:neq),(/3,2,n_bodies,1/))
 
+	 if(tt-tt_last >= interval_io) then
+	 	 ! position in run:
+	 	 print *,'Model is up to here: ',tt/(365.25*86400), &
+	 	 		 ' done of ',tfinal/(365.25*86400)
+	 	 tt_last=tt
+	 endif
 
 	 if (isav.eq.nsav.or.tt.ge.tfinal) then
+	 	
 		! open the netcdf file (do not overwrite if it exists)
 		call check( nf90_open(outputfile01, nf90_write, ncid) )    
 

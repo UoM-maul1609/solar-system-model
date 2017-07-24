@@ -36,6 +36,7 @@
   general_relativity=.false.,   ! add corrections for general relativity
   dt=30.d0,     ! days		   ! output interval
   tfinal=2.d2, ! years		   ! run-time
+  interval_io=10., ! years for io
 ! which bodies a body interacts with:
   interact(1:10)=.true.,.true.,.true.,.true.,.true.,  
                  .true.,.true.,.true.,.true.,.true./ 
