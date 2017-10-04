@@ -1,4 +1,4 @@
-Compilation:
+Compila   tion:
 	*you will need to install NETCDF on your system and note the directories where the 
 	library and module reside. 
 	*in the Makefile change the variables NETCDF_FOR, NETCDF_C and NETCDF_LIB to suit 
