@@ -74,7 +74,7 @@
 		implicit none
 		integer, parameter :: dp = real64
 		integer, parameter :: i4b = selected_int_kind(9)
-		integer(i4b), parameter :: n_bodies=21
+		integer(i4b), parameter :: n_bodies=22
 		integer(i4b) :: neq=n_bodies*6,nn_interact=n_bodies
 		real(dp), parameter :: c=2.99792458e8_dp ! speed of light
 		real(dp), dimension(n_bodies) :: gm, &
@@ -192,12 +192,12 @@
 	endif
 
 	! mean distance from the sun
-	meandist=(/7e8_dp, 5.79e10_dp, 1.082e11_dp, &
+	meandist=(/7e8_dp, 5.79e10_dp, 1.082e11_dp,  &
 		  1.496e11_dp, 2.279e11_dp, 7.783e11_dp, &
-		  1.426e12_dp, 2.871e12_dp, 4.497e12_dp, 5.914e12_dp, &
-		  7e8_dp, 5.79e10_dp, 1.082e11_dp, & ! Holly to edit these and next 2 lines
-		  1.496e11_dp, 2.279e11_dp, 7.783e11_dp, &
-		  1.426e12_dp, 2.871e12_dp, 4.497e12_dp, 5.914e12_dp, 5.914e12_dp/)
+		 1.426e12_dp, 2.871e12_dp, 4.497e12_dp, 5.914e12_dp, &
+		 1.0159e13_dp, 7.0792e12_dp, 8.0725e12_dp, 5.8516e12_dp, &
+		  5.7248e12_dp, 5.4604e12_dp, 5.4460e12_dp, 5.3797e12_dp, &
+	   	5.5168e12_dp, 5.3324e12_dp, 1.2391e13_dp, 1.2932e13_dp/) &
 
 	inds1=1
 
