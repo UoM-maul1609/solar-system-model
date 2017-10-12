@@ -133,7 +133,7 @@
 
 	! namelist
 	character (len=200) :: nmlfile = ' '
-	namelist /initial_state/ x,y,z,ux,uy,uz, gm
+	namelist /initial_state/ x,y,z,ux,uy,uz, meandist,gm
 	namelist /run_vars/ outputfile01,run_forward_in_time, general_relativity, &
 					  dt,tfinal, interval_io, interact
 
@@ -192,12 +192,12 @@
 	endif
 
 	! mean distance from the sun
-	meandist=(/7e8_dp, 5.79e10_dp, 1.082e11_dp,  &
-		  1.496e11_dp, 2.279e11_dp, 7.783e11_dp, &
-		 1.426e12_dp, 2.871e12_dp, 4.497e12_dp, 5.914e12_dp, &
-		 1.0159e13_dp, 7.0792e12_dp, 8.0725e12_dp, 5.8516e12_dp, &
-		  5.7248e12_dp, 5.4604e12_dp, 5.4460e12_dp, 5.3797e12_dp, &
-	   	5.5168e12_dp, 5.3324e12_dp, 1.2391e13_dp, 1.2932e13_dp/) 
+!	meandist=(/7e8_dp, 5.79e10_dp, 1.082e11_dp,  &
+!		  1.496e11_dp, 2.279e11_dp, 7.783e11_dp, &
+!		 1.426e12_dp, 2.871e12_dp, 4.497e12_dp, 5.914e12_dp, &
+!		 1.0159e13_dp, 7.0792e12_dp, 8.0725e12_dp, 5.8516e12_dp, &
+!		  5.7248e12_dp, 5.4604e12_dp, 5.4460e12_dp, 5.3797e12_dp, &
+!	   	5.5168e12_dp, 5.3324e12_dp, 1.2391e13_dp, 1.2932e13_dp/) 
 
 	inds1=1
 
