@@ -74,7 +74,7 @@
 		implicit none
 		integer, parameter :: dp = real64
 		integer, parameter :: i4b = selected_int_kind(9)
-		integer(i4b), parameter :: n_bodies=22
+		integer(i4b), parameter :: n_bodies=18
 		integer(i4b) :: neq=n_bodies*6,nn_interact=n_bodies
 		real(dp), parameter :: c=2.99792458e8_dp ! speed of light
 		real(dp), dimension(n_bodies) :: gm, &
