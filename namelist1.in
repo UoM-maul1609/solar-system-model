@@ -72,8 +72,8 @@ meandist(1:18)=7e8, 7.783e11,
   outputfile01='/tmp/output.nc',
   run_forward_in_time=.false., ! if true run in the forward time direction
   general_relativity=.false.,   ! add corrections for general relativity
-  dt=30.d0,     ! days		   ! output interval
-  tfinal=200.d2, ! years		   ! run-time
+  dt=7200.d0,     ! days		   ! output interval
+  tfinal=2.d2, ! years		   ! run-time
   interval_io=10, ! years for io
 ! which bodies a body interacts with:
   interact(1:18)=.true.,  
