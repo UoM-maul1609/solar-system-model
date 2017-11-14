@@ -73,7 +73,7 @@ meandist(1:18)=7e8, 7.783e11,
   run_forward_in_time=.false., ! if true run in the forward time direction
   general_relativity=.false.,   ! add corrections for general relativity
   dt=7200.d0,     ! days		   ! output interval
-  tfinal=2.d2, ! years		   ! run-time
+  tfinal=1000000.d2, ! years		   ! run-time
   interval_io=10, ! years for io
 ! which bodies a body interacts with:
   interact(1:18)=.true.,  
