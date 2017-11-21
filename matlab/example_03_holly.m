@@ -1,5 +1,5 @@
 % open file
-nc=netcdf('/tmp/output.nc');
+nc=netcdf('/media/modeller/My Passport/Holly-Grey/reference model/reference-model.nc');
 dims=3;
 
 % Fourier analysis of the sun-planet distance for all the planets
@@ -43,6 +43,9 @@ for i=2:length(bodies)
 
     plot(1./f,(2*abs(Y(1:NFFT/2+1))),'r')
     set(gca,'yscale','log','xscale','log')
+    set(gca,'xtick',10.^[0:1:8])
+    set(gca,'ytick',10.^[0:1:14])
+    grid on 
     xlabel('Period (years)');ylabel('Power');
     text(0.1,0.9,bodies{i},'fontsize',15,'units','normalized');
     waitbar((i-1)/(length(bodies)-1),h)
