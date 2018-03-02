@@ -1,5 +1,5 @@
 % open file
-nc=netcdf('/media/modeller/My Passport/Holly-Grey/reference model/reference-model.nc');
+nc=netcdf('/media/modeller/data/output.nc');
 dims=3;
 
 % Fourier analysis of the sun-planet distance for all the planets
@@ -29,7 +29,7 @@ f = Fs/2*linspace(0,1,NFFT/2+1);
 % bodies={'Sun','Mercury','Venus','Earth','Mars','Jupiter','Saturn','Uranus','Neptune','Pluto'};
 bodies={'Sun','Jupiter','Saturn','Uranus','Neptune','Pluto','2010 GB-174',...
     '2004 VN-112', '2000 CR-105', '2005 RH-52', '2003 HB-57', '2007 TG-422', ...
-     '2002 GB-32', '2007 VJ-305', '2010 VZ-98', '2001 FP-185', '2012 VP-113','Sedna'};
+     '2002 GB-32', '2007 VJ-305', '2010 VZ-98', '2001 FP-185', '2012 VP-113','Sedna','Planet 9'};
 
 h = waitbar(0,'Please wait...');
 for i=2:length(bodies)

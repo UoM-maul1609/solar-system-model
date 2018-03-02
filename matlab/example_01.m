@@ -1,5 +1,5 @@
 % open file
-nc=netcdf('/tmp/output.nc');
+nc=netcdf('/media/modeller/data/output.nc');
 
 
 % plot the planet-sun distances, assuming the sun is the first element:
