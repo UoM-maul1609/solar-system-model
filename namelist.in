@@ -1,4 +1,5 @@
 ! positions and velocities of the bodies in the solar system (in km, km/s)
+! time below is 2014-02-02 20:18:00
 &initial_state
  x(1:10)=0.d0, 1.563021412664830d+07, -9.030189258080004d+07, -1.018974476358996d+08 , 
         -2.443763125844157d+08, -2.35165468275322006d+08, -1.011712827283427d+09 , 

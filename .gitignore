@@ -1,0 +1,16 @@
+*.o
+*.mod
+*.a
+*.so
+*.exe
+*.run
+*.run2
+*.tmp
+*.tmp2
+*~
+doxygen
+pics
+python
+.dropbox
+Icon*
+
