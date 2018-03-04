@@ -13,4 +13,5 @@ pics
 python
 .dropbox
 Icon*
-
+*.exe
+*.a
