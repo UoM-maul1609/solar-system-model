@@ -33,14 +33,17 @@
 
 &run_vars
   outputfile01='/tmp/output.nc',
-  run_forward_in_time=.false., ! if true run in the forward time direction
+  run_forward_in_time=.true., ! if true run in the forward time direction
   general_relativity=.false.,   ! add corrections for general relativity
   dt=30.d0,     ! days		   ! output interval
-  tfinal=2.d2, ! years		   ! run-time
+  tfinal=1.d4, ! years		   ! run-time
   interval_io=10., ! years for io
 ! which bodies a body interacts with:
   interact(1:10)=.true.,.true.,.true.,.true.,.true.,  
                  .true.,.true.,.true.,.true.,.true./ 
+! this example is everything apart from jupiter, saturn, and uranus
+!  interact(1:10)=.true.,.true.,.true.,.true.,.false.,  
+!                 .false.,.false.,.false.,.false.,.true./ 
 ! this example is only the sun
 !  interact(1:10)=.true.,.false.,.false.,.false.,.false., 
 !                 .false.,.false.,.false.,.false.,.false./ 
