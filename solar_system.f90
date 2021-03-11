@@ -96,7 +96,7 @@
 
 
 
-	!>@author
+	   !>@author
 	!>Paul J. Connolly, The University of Manchester
 	!>@brief
 	!>main program of Solar System Model (SSM): 
