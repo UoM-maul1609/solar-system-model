@@ -70,23 +70,21 @@
 	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	module consts_and_vars
 		use, intrinsic :: iso_fortran_env
-		
+		use numerics_type
 		implicit none
-		integer, parameter :: dp = real64
-		integer, parameter :: i4b = selected_int_kind(9)
 		integer(i4b), parameter :: n_bodies=10
 		integer(i4b) :: neq=n_bodies*6,nn_interact=n_bodies
-		real(dp), parameter :: c=2.99792458e8_dp ! speed of light
-		real(dp), dimension(n_bodies) :: gm, &
+		real(wp), parameter :: c=2.99792458e8_wp ! speed of light
+		real(wp), dimension(n_bodies) :: gm, &
 						 x,y,z, ux,uy,uz, meandist, lx,ly,lz,lt
-		real(dp), dimension(n_bodies*6) :: yinit1
+		real(wp), dimension(n_bodies*6) :: yinit1
 		integer(i4b), dimension(n_bodies) :: inds1, inds, &
 													 interactions,interactions2
 
 		logical, dimension(n_bodies) ::  interact=.true.
 		logical :: general_relativity=.true.
-		real(dp), parameter :: G=6.6719e-11_dp, m=1.98855e30_dp      
-		real(dp) :: tt=0.e0_dp
+		real(wp), parameter :: G=6.6719e-11_wp, m=1.98855e30_wp      
+		real(wp) :: tt=0.e0_wp
 	end module consts_and_vars
 	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
@@ -103,30 +101,32 @@
 	program solar_system
 
 	use netcdf
+	use numerics_type
+	use numerics, only : dvode
 	use consts_and_vars, only : n_bodies, neq,gm,x,y,z,ux,uy,uz, yinit1, &
 						 meandist, inds1,inds,G,m,interactions,tt, &
 						 interact,nn_interact,interactions,interactions2, &
-						 general_relativity, lx,ly,lz,lt, dp, i4b
+						 general_relativity, lx,ly,lz,lt
 
 	implicit none
 	integer(i4b) :: i, j, allocatestatus
-	real(dp), dimension(6*n_bodies) :: yinit, ydot, ysol, atol,rtol1
-	real(dp), dimension(6*n_bodies) :: rpar
+	real(wp), dimension(6*n_bodies) :: yinit, ydot, ysol, atol,rtol1
+	real(wp), dimension(6*n_bodies) :: rpar
 	integer(i4b), dimension(6*n_bodies) :: ipar
 
-	real(dp) :: tout, dt=5e0_dp*86400.e0_dp, rtol, tfinal, interval_io, &
+	real(wp) :: tout, dt=5e0_wp*86400.e0_wp, rtol, tfinal, interval_io, &
 				tt_last
 	integer(i4b) :: itol, itask, istate, iopt, ng, & 
 								   lrw, liw, mf, mflag
-	real(dp), allocatable, dimension(:) :: rwork 
+	real(wp), allocatable, dimension(:) :: rwork 
 	integer(i4b), allocatable, dimension(:) :: iwork
 
 	! netcdf stuff
 	character (len = 100) :: outputfile01='output02.nc'
 	integer(i4b), parameter :: nsav=10000
-	real(dp), dimension(3,2,n_bodies) :: pos
-	real(dp), dimension(3,2,n_bodies,nsav) :: pos_save
-	real(dp), dimension(nsav) :: tt_save
+	real(wp), dimension(3,2,n_bodies) :: pos
+	real(wp), dimension(3,2,n_bodies,nsav) :: pos_save
+	real(wp), dimension(nsav) :: tt_save
 	integer(i4b) :: ncid, varid, x_dimid, i_dimid, j_dimid, & 
 								 a_dimid, icur,isav
 	logical :: run_forward_in_time = .true.
@@ -147,37 +147,37 @@
 	! Initial data for the solar system (taken from JPL ephemeris)
 	! the product of G and m for the bodies in the solar system
 	!      gm=(/G*m/1.d9, &
-	gm=(/1.327124400e11_dp, &
-	  22032.09e0_dp, 324858.63e0_dp, 398600.440e0_dp, &
-	  42828.3e0_dp, 126686511e0_dp, 37931207.8e0_dp , &
-	  5793966e0_dp, 6835107e0_dp, 872.4e0_dp/)*1.e9_dp
+	gm=(/1.327124400e11_wp, &
+	  22032.09e0_wp, 324858.63e0_wp, 398600.440e0_wp, &
+	  42828.3e0_wp, 126686511e0_wp, 37931207.8e0_wp , &
+	  5793966e0_wp, 6835107e0_wp, 872.4e0_wp/)*1.e9_wp
 
 	! The positions (x,y,z) and the velocities (vx,vy,va) of all the planets
-	x=(/0.e0_dp, 1.563021412664830e+07_dp, -9.030189258080004e+07_dp, -1.018974476358996e+08_dp , &
-	-2.443763125844157e+08_dp, -2.35165468275322006e+08_dp, -1.011712827283427e+09_dp , &
-	 2.934840841770302e+09_dp, 4.055112581124043e+09_dp, 9.514009594170194e+08_dp/)*1e3_dp
+	x=(/0.e0_wp, 1.563021412664830e+07_wp, -9.030189258080004e+07_wp, -1.018974476358996e+08_wp , &
+	-2.443763125844157e+08_wp, -2.35165468275322006e+08_wp, -1.011712827283427e+09_wp , &
+	 2.934840841770302e+09_wp, 4.055112581124043e+09_wp, 9.514009594170194e+08_wp/)*1e3_wp
 
-	y=(/0.e0_dp, 4.327888220902108e+07_dp, 5.802615456116644e+07_dp, 1.065689158175689e+08_dp, & 
-	 4.473211564076996e+07_dp, 7.421837640432589e+08_dp, -1.077496255617324e+09_dp , &
-	 6.048399137411513e+08_dp, -1.914578873112663e+09_dp, -4.776029500570151e+09_dp /)*1e3_dp
+	y=(/0.e0_wp, 4.327888220902108e+07_wp, 5.802615456116644e+07_wp, 1.065689158175689e+08_wp, & 
+	 4.473211564076996e+07_wp, 7.421837640432589e+08_wp, -1.077496255617324e+09_wp , &
+	 6.048399137411513e+08_wp, -1.914578873112663e+09_wp, -4.776029500570151e+09_wp /)*1e3_wp
 
-	z=(/0.e0_dp, 2.102123103174893e+06_dp, 6.006513603716755e+06_dp, -3.381951053601424e+03_dp, & 
-	 6.935657388967808e+06_dp, 2.179850895804323e+06_dp, 5.901251900068215e+07_dp , &
-	-3.576451387567792e+07_dp, -5.400973716179796e+07_dp, 2.358627841705075e+08_dp /)*1e3_dp
+	z=(/0.e0_wp, 2.102123103174893e+06_wp, 6.006513603716755e+06_wp, -3.381951053601424e+03_wp, & 
+	 6.935657388967808e+06_wp, 2.179850895804323e+06_wp, 5.901251900068215e+07_wp , &
+	-3.576451387567792e+07_wp, -5.400973716179796e+07_wp, 2.358627841705075e+08_wp /)*1e3_wp
 
-	ux=(/0.e0_dp, -5.557001175482630e+01_dp, -1.907374632532257e+01_dp, -2.201749257051057e+01_dp , &
-	 -3.456935754608896e+00_dp, -1.262559929908801e+01_dp, 6.507898648442419e+00_dp , &
-	 -1.433852081777671e+00_dp, 2.275119229131818e+00_dp, 5.431808363374300e+00_dp/)*1e3_dp
+	ux=(/0.e0_wp, -5.557001175482630e+01_wp, -1.907374632532257e+01_wp, -2.201749257051057e+01_wp , &
+	 -3.456935754608896e+00_wp, -1.262559929908801e+01_wp, 6.507898648442419e+00_wp , &
+	 -1.433852081777671e+00_wp, 2.275119229131818e+00_wp, 5.431808363374300e+00_wp/)*1e3_wp
 
-	uy=(/0.e0_dp, 1.840863017229157e+01_dp, -2.963461693326599e+01_dp, -2.071074857788741e+01_dp, & 
-	 -2.176307370133160e+01_dp, -3.332552395475581e+00_dp, -6.640809674126991e+00_dp , &
-	  6.347897341634990e+00_dp, 4.942356914027413e+00_dp, -2.387056445508962e-02_dp/)*1e3_dp
+	uy=(/0.e0_wp, 1.840863017229157e+01_wp, -2.963461693326599e+01_wp, -2.071074857788741e+01_wp, & 
+	 -2.176307370133160e+01_wp, -3.332552395475581e+00_wp, -6.640809674126991e+00_wp , &
+	  6.347897341634990e+00_wp, 4.942356914027413e+00_wp, -2.387056445508962e-02_wp/)*1e3_wp
 
-	uz=(/0.e0_dp ,6.602621285552567e+00_dp, 6.946391255404438e-01_dp, 1.575245213712245e-03_dp , &
-	 -3.711433859326417e-01_dp ,2.962741332356101e-01_dp, -1.434198106014633e-01_dp , &
-	 4.228261484335974e-02_dp ,-1.548950389954096e-01_dp, -1.551877289694926e+00_dp/)*1e3_dp
+	uz=(/0.e0_wp ,6.602621285552567e+00_wp, 6.946391255404438e-01_wp, 1.575245213712245e-03_wp , &
+	 -3.711433859326417e-01_wp ,2.962741332356101e-01_wp, -1.434198106014633e-01_wp , &
+	 4.228261484335974e-02_wp ,-1.548950389954096e-01_wp, -1.551877289694926e+00_wp/)*1e3_wp
 
-	tfinal=365.25e0_dp*86400.e0_dp*5.e2_dp
+	tfinal=365.25e0_wp*86400.e0_wp*5.e2_wp
 
 
 
@@ -190,16 +190,16 @@
 	call getarg(1,nmlfile)      
 	open(8,file=nmlfile,status='old', recl=80, delim='apostrophe')
 	read(8,nml=initial_state)
-	x=x*1e3_dp
-	y=y*1e3_dp
-	z=z*1e3_dp
-	ux=ux*1e3_dp
-	uy=uy*1e3_dp
-	uz=uz*1e3_dp
-	gm=gm*1e9_dp
+	x=x*1e3_wp
+	y=y*1e3_wp
+	z=z*1e3_wp
+	ux=ux*1e3_wp
+	uy=uy*1e3_wp
+	uz=uz*1e3_wp
+	gm=gm*1e9_wp
 	read(8,nml=run_vars)
-	dt=dt*86400.e0_dp
-	tfinal=tfinal*365.25e0_dp*86400.e0_dp
+	dt=dt*86400.e0_wp
+	tfinal=tfinal*365.25e0_wp*86400.e0_wp
 	close(8)
 	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
@@ -225,9 +225,9 @@
 	endif
 
 	! mean distance from the sun
-	meandist=(/7e8_dp, 5.79e10_dp, 1.082e11_dp, &
-		  1.496e11_dp, 2.279e11_dp, 7.783e11_dp, &
-		  1.426e12_dp, 2.871e12_dp, 4.497e12_dp, 5.914e12_dp/)
+	meandist=(/7e8_wp, 5.79e10_wp, 1.082e11_wp, &
+		  1.496e11_wp, 2.279e11_wp, 7.783e11_wp, &
+		  1.426e12_wp, 2.871e12_wp, 4.497e12_wp, 5.914e12_wp/)
 
 	inds1=1
 
@@ -314,17 +314,17 @@
 	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	! set up variables to pass to dvode                                      !
 	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	tt=0.e0_dp
+	tt=0.e0_wp
 	ysol=yinit
 	tout=tt+dt
 	!      tfinal=365.25d0*86400.d0*1.d6
 	!itol=2 ! both relative and absolute error convergence
 	itol=4 ! both relative and absolute error convergence
 	!      rtol=1.d-8
-	rtol1=1.e-8_dp
-	rtol1(7:12)=1e-10_dp
-	rtol1=1d-12
-	atol(:)=1.e-6_dp ! nearest micron and micron / second (i.e. negligible)
+	!rtol1=1.e-6_wp
+	!rtol1(7:12)=1e-10_wp
+	rtol1=1e-12_wp
+	atol(:)=1.e-6_wp ! nearest micron and micron / second (i.e. negligible)
 	itask=1
 	istate=1
 	iopt=1 ! optional input
@@ -341,10 +341,10 @@
 	iwork(6)=10000 ! max steps
 	iwork(7)=10  ! max messages printed per problem
 	iwork(5)=12 ! 5   ! order
-	rwork(5)=0.e0_dp ! initial time-step
+	rwork(5)=0.e0_wp ! initial time-step
 	rwork(6)=dt   ! max time-step
-	rwork(7)=0.e0_dp ! min time-step allowed
-	rwork(14)=2.e0_dp ! tolerance scale factor
+	rwork(7)=0.e0_wp ! min time-step allowed
+	rwork(14)=2.e0_wp ! tolerance scale factor
 	mflag=0
 	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
@@ -360,7 +360,7 @@
 	icur=1
 	isav=1
 	istate=1
-	interval_io=interval_io*365.25_dp*86400._dp ! put in seconds
+	interval_io=interval_io*365.25_wp*86400._wp ! put in seconds
 	tt_last=-interval_io
 	do while (tt.lt.tfinal)
 	 do while(tt.lt.tout)
@@ -439,23 +439,23 @@
 
 	use consts_and_vars, only : gm, n_bodies,inds,interactions, yinit1, &
 							  interact,interactions2,nn_interact,c, &
-							  general_relativity,lx,ly,lz,lt, dp, i4b
-
+							  general_relativity,lx,ly,lz,lt
+	use numerics_type
 	implicit none
 
-	real(dp), intent(inout) :: tt
-	real(dp), intent(inout), dimension(neq) :: y, ydot
+	real(wp), intent(inout) :: tt
+	real(wp), intent(inout), dimension(neq) :: y, ydot
 	integer(i4b), intent(inout) :: neq
-	real(dp), intent(inout),dimension(6*n_bodies) :: rpar
+	real(wp), intent(inout),dimension(6*n_bodies) :: rpar
 	integer(i4b), intent(inout),dimension(6*n_bodies) :: ipar
 
 	! locals
 	integer(i4b) :: i,n,k,j
-	real(dp), dimension(n_bodies-1) :: r2
+	real(wp), dimension(n_bodies-1) :: r2
 	logical, dimension(n_bodies) :: interact2
-	real(dp) :: lx1,ly1,lz1, lt1
+	real(wp) :: lx1,ly1,lz1, lt1
 
-	ydot=0.d0
+	ydot=0._wp
 
 
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -513,15 +513,15 @@
 		! note that l^2=G*M0*r
 		! dux/dt:
 		ydot((i-1)*6+4)=ydot((i-1)*6+4)- &
-		sum(3.e0_dp*gm( inds(1:n) )**2/c**2 / &
+		sum(3.e0_wp*gm( inds(1:n) )**2/c**2 / &
 		r2(1:n)**2*(y((i-1)*6+1)-y( (inds(1:n)-1)*6+1 )) )
 		! duy/dt:
 		ydot((i-1)*6+5)=ydot((i-1)*6+5)- &
-		sum(3.e0_dp*gm( inds(1:n) )**2/c**2 / &
+		sum(3.e0_wp*gm( inds(1:n) )**2/c**2 / &
 		r2(1:n)**2*(y((i-1)*6+2)-y( (inds(1:n)-1)*6+2 )) )
 		! duz/dt:
 		ydot((i-1)*6+6)=ydot((i-1)*6+6)- &
-		sum(3.e0_dp*gm( inds(1:n) )**2/c**2 / &
+		sum(3.e0_wp*gm( inds(1:n) )**2/c**2 / &
 		r2(1:n)**2*(y((i-1)*6+3)-y( (inds(1:n)-1)*6+3 )) )
 	 end if
 	 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -565,14 +565,15 @@
 	!>@param[inout] rpar, ipar: real and integer work arrays
 	subroutine jsolar01(neq, t, y, ml, mu, pd, nrpd, rpar, ipar)
 
-		use consts_and_vars, only : n_bodies, dp, i4b
+		use consts_and_vars, only : n_bodies
+		use numerics_type
 
 		implicit none
-		real(dp), intent(in) :: t
-		real(dp), dimension(neq), intent(inout) :: y
-		real(dp), dimension(nrpd, neq), intent(inout) :: pd
+		real(wp), intent(in) :: t
+		real(wp), dimension(neq), intent(inout) :: y
+		real(wp), dimension(nrpd, neq), intent(inout) :: pd
 		integer(i4b), intent(inout) :: neq, ml, mu, nrpd
-		real(dp), intent(inout),dimension(6*n_bodies) :: rpar
+		real(wp), intent(inout),dimension(6*n_bodies) :: rpar
 		integer(i4b), intent(inout),dimension(6*n_bodies) :: ipar
 
 
@@ -588,7 +589,7 @@
 	!>@param[in] status of netcdf file pointer
 	subroutine check(status)
 		use netcdf
-		use consts_and_vars, only : dp, i4b
+		use numerics_type
 		integer(i4b), intent (in) :: status
 
 		if(status /= nf90_noerr) then 

@@ -44,6 +44,7 @@ OBJ = o
 
 FFLAGS = $(SIXTY_FOUR_F) $(OPT)  $(DEBUG) -Dheliocentric -o # helicentric means that we keep the sun at (0,0,0)
 FFLAGS2 = $(SIXTY_FOUR_F) $(OPT) $(DEBUG) -o # 
+VAR_TYPE = 1 # 0 single, 1 double
 
 
 main.exe	:  odelib.a  solar_system.$(OBJ) 
