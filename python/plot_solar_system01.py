@@ -21,7 +21,7 @@ r,=np.shape(nc.variables['time'][:])
 stride=1
 plt.ion()
 fig=plt.figure()
-ax=Axes3D(fig)
+ax=fig.add_subplot(projection='3d')
 for i in np.mgrid[1:10:1]:
    ax.plot(nc.variables['pos'][1:r:stride,i,0],nc.variables['pos'][1:r:stride,i,1],
          nc.variables['pos'][1:r:stride,i,2],'k.',ms=0.1)

@@ -1,3 +1,8 @@
+OSNF_DIR = osnf
+
+.PHONY: osnf_code cleanall
+CLEANDIRS = $(OSNF_DIR) ./
+
 # LINUX or WIN64
 #PLATFORM = WIN64   
 PLATFORM = LINUX
@@ -43,29 +48,32 @@ FFLAGS2 = $(SIXTY_FOUR_F) $(OPT) $(DEBUG) -o #
 
 main.exe	:  odelib.a  solar_system.$(OBJ) 
 	$(FOR2) $(FFLAGS2)main.exe solar_system.$(OBJ)   \
-	 -lm odelib.a ${NETCDFLIB} -I ${NETCDFMOD} ${NETCDF_LIB} $(DEBUG) 
+	 -lm odelib.a ${NETCDFLIB} -I ${NETCDFMOD} ${NETCDF_LIB} $(DEBUG) -L$(OSNF_DIR) 
 
-odelib.a	:   d1mach.$(OBJ) vode.$(OBJ) dlinpk.$(OBJ) acdc.$(OBJ) colmod.$(OBJ) opkdmain.$(OBJ) opkda1.$(OBJ) opkda2.$(OBJ)
-	$(AR) rc odelib.a d1mach.$(OBJ) vode.$(OBJ) dlinpk.$(OBJ) acdc.$(OBJ) colmod.$(OBJ) opkdmain.$(OBJ) opkda1.$(OBJ) opkda2.$(OBJ); $(RANLIB) odelib.a
-solar_system.$(OBJ)   : solar_system.f90 
-	$(FOR) -cpp solar_system.f90 -I ${NETCDFMOD}  -cpp $(FFLAGS)solar_system.$(OBJ)
-d1mach.$(OBJ) 	: ./other/d1mach.f 
-	$(FOR) 	./other/d1mach.f $(FFLAGS)d1mach.$(OBJ)  
-opkdmain.$(OBJ) : ./other/opkdmain.f 
-	$(FOR) 	./other/opkdmain.f $(FFLAGS)opkdmain.$(OBJ)
-opkda1.$(OBJ) : ./other/opkda1.f 
-	$(FOR) 	./other/opkda1.f -w $(FFLAGS)opkda1.$(OBJ)
-opkda2.$(OBJ) : ./other/opkda2.f 
-	$(FOR) ./other/opkda2.f -w $(FFLAGS)opkda2.$(OBJ)
-vode.$(OBJ) : ./other/vode.f 
-	$(FOR) 	./other/vode.f $(FFLAGS)vode.$(OBJ)
-acdc.$(OBJ) : ./other/acdc.f 
-	$(FOR) 	./other/acdc.f $(FFLAGS)acdc.$(OBJ)
-dlinpk.$(OBJ) : ./other/dlinpk.f 
-	$(FOR) 	./other/dlinpk.f -w $(FFLAGS)dlinpk.$(OBJ)
-colmod.$(OBJ) : ./other/colmod.f 
-	$(FOR) 	./other/colmod.f -Wno-all $(FFLAGS)colmod.$(OBJ)
-clean :
+odelib.a	:   osnf_code
+	$(AR) rc odelib.a $(OSNF_DIR)/numerics.$(OBJ) $(OSNF_DIR)/zeroin.$(OBJ) $(OSNF_DIR)/sfmin.$(OBJ) \
+				$(OSNF_DIR)/fmin.$(OBJ) $(OSNF_DIR)/r1mach.$(OBJ) \
+                $(OSNF_DIR)/d1mach.$(OBJ) $(OSNF_DIR)/dfsid1.$(OBJ) \
+                $(OSNF_DIR)/poly_int.$(OBJ) $(OSNF_DIR)/find_pos.$(OBJ) \
+                $(OSNF_DIR)/svode.$(OBJ) \
+                $(OSNF_DIR)/slinpk.$(OBJ) $(OSNF_DIR)/vode.$(OBJ) \
+                $(OSNF_DIR)/dlinpk.$(OBJ) $(OSNF_DIR)/vode_integrate.$(OBJ) \
+                $(OSNF_DIR)/erfinv.$(OBJ) $(OSNF_DIR)/tridiagonal.$(OBJ) \
+                $(OSNF_DIR)/hygfx.$(OBJ) $(OSNF_DIR)/random.$(OBJ)			
+
+solar_system.$(OBJ)   : solar_system.f90 osnf_code
+	$(FOR) -cpp solar_system.f90 -I$(OSNF_DIR) -I${NETCDFMOD}  -cpp $(FFLAGS)solar_system.$(OBJ)
+osnf_code:
+	$(MAKE) -C $(OSNF_DIR)
+
+clean: 
 	rm *.exe  *.o *.mod *~ \
 	odelib.a
+
+cleanall:
+	for i in $(CLEANDIRS); do \
+		$(MAKE) -C $$i clean; \
+	done
+	
+	
 
