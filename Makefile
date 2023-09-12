@@ -19,9 +19,8 @@ NETCDF_LIB=-lnetcdff
 
 
 ifeq ($(strip $(PLATFORM)),$(strip LINUX))
-NETCDFLIB=-L ${NETCDF_FOR}/lib/  \
-          -L ${NETCDF_C}/lib/  #/usr/lib64/
-NETCDFMOD= ${NETCDF_FOR}/include/ #/usr/lib64/gfortran/modules/
+NETCDFLIB=-L/usr/lib/x86_64-linux-gnu/
+NETCDFMOD=/usr/include/
 
 FOR = gfortran -c  #-fno-underscoring 
 FOR2 = gfortran  #-fno-underscoring 
