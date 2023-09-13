@@ -27,10 +27,10 @@ L=50000.
 #L=600000.
 #L=40000.
 
-NFFT=np.int(2.**np.ceil(np.log(L)/np.log(2.)))
+NFFT=int(2.**np.ceil(np.log(L)/np.log(2.)))
 dt=(nc.variables['time'][1]-nc.variables['time'][0]) / (86400.0*365.25)
 Fs=1./dt
-f = Fs/2.*np.linspace(0.,1.,np.int(NFFT/2+1))
+f = Fs/2.*np.linspace(0.,1.,int(NFFT/2+1))
 
 n_bodies=10
 plt.ion()
@@ -39,7 +39,7 @@ ax=plt.axes()
 for i in np.mgrid[1:n_bodies:1]:
     y1=np.sqrt(np.sum(nc.variables['pos'][:,i,0:2].astype(float)**2,axis=1))
     y=np.fft.fft(y1,int(NFFT))/L
-    ax.plot(1./f,(2.*np.abs(y[1:int(NFFT/2+2)]) ))
+    ax.plot(1./np.maximum(f,1e-8),(2.*np.abs(y[1:int(NFFT/2+2)]) ))
 #   ax.plot(f,(2.*np.abs(y[1:NFFT/2+2]) ))
 
 ax.semilogx()
