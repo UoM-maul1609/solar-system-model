@@ -9,9 +9,12 @@ OPT    =-O3
 #NETCDF_C=/Users/mccikpc2/Dropbox/programming/netcdf-4.4.1.1-mac/
 NETCDF_LIB=-lnetcdff 
 
-NETCDFLIB=-L ${NETCDF_FOR}/lib/  \
-          -L ${NETCDF_C}/lib/
-NETCDFMOD= ${NETCDF_FOR}/include/
+#NETCDFLIB=-L ${NETCDF_FOR}/lib/  \
+#          -L ${NETCDF_C}/lib/
+#NETCDFMOD= ${NETCDF_FOR}/include/
+
+NETCDFLIB=-L/usr/lib/x86_64-linux-gnu/
+NETCDFMOD=/usr/include/
 
 
 FOR = gfortran -c  

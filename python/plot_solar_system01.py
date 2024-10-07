@@ -1,3 +1,7 @@
+import os
+import getpass
+
+
 import matplotlib
 matplotlib.use('agg')
 from matplotlib import rc
@@ -9,7 +13,10 @@ from netCDF4 import Dataset as NetCDFFile
 
 import numpy as np
 
-nc=NetCDFFile('/tmp/output.nc')
+
+username=getpass.getuser()
+
+nc=NetCDFFile('/tmp/' + username + '/output.nc')
 
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
@@ -21,7 +28,8 @@ r,=np.shape(nc.variables['time'][:])
 stride=1
 plt.ion()
 fig=plt.figure()
-ax=fig.add_subplot(projection='3d')
+ax=Axes3D(fig,auto_add_to_figure=False)
+fig.add_axes(ax)
 for i in np.mgrid[1:10:1]:
    ax.plot(nc.variables['pos'][1:r:stride,i,0],nc.variables['pos'][1:r:stride,i,1],
          nc.variables['pos'][1:r:stride,i,2],'k.',ms=0.1)
@@ -36,7 +44,7 @@ nc.close()
 mng=plt.get_current_fig_manager()
 mng.full_screen_toggle()
 
-fig.savefig('orbits.png')
+fig.savefig('/tmp/' + username + '/orbits.png', dpi=300)
 
 mng.full_screen_toggle()
 
