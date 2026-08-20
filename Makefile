@@ -18,10 +18,13 @@ OPT    =-O3  #-fopenmp-simd -fopenmp
 NETCDF_LIB=-lnetcdff 
 
 
-ifeq ($(strip $(PLATFORM)),$(strip LINUX))
-NETCDFLIB=-L/usr/lib/x86_64-linux-gnu/
-NETCDFMOD=/usr/include/
+#NETCDFLIB=-L/usr/lib/x86_64-linux-gnu/
+#NETCDFMOD=/usr/include/
 
+ifeq ($(strip $(PLATFORM)),$(strip LINUX))
+NETCDFLIB=-L ${NETCDF_FOR}/lib/  \
+          -L ${NETCDF_C}/lib/
+NETCDFMOD= ${NETCDF_FOR}/include/
 FOR = gfortran -c  #-fno-underscoring 
 FOR2 = gfortran  #-fno-underscoring 
 AR = ar 
