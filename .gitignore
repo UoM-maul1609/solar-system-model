@@ -13,4 +13,4 @@ pics
 python/*.png
 .dropbox
 Icon*
-
+.DS_Store
