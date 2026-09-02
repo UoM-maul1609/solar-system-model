@@ -378,19 +378,22 @@ The following figure shows the planet-Sun distance from a 10,000-year
 simulation and illustrates the range of short- and long-period structure in
 the integrations.
 
-![Planet-Sun distance over 10,000 years](docs/figures/milankovitch.png)
+![Planet-Sun distance over 10,000 years](./docs/figures/milankovitch.png)
 
 
+### Planetary motion with mutual interactions
 
 ```markdown
 ![Interacting Solar System animation](docs/figures/interacting_all.gif)
 ```
 
-and the barycentric wobble can be embedded with:
+### Solar barycentric wobble
 
-```markdown
-![Solar barycentric wobble](docs/figures/barycentric_wobble.gif)
-```
+![Solar barycentric wobble](docs/figures/barycentric_sun_wobble.png)
+
+Trajectory of the Sun relative to the Solar System barycentre when mutual
+planetary interactions are enabled and the model is run without the
+heliocentric coordinate constraint.
 
 ## Plotting scripts
 
