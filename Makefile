@@ -84,9 +84,19 @@ endif
 
 OBJ = o
 
-FFLAGS = $(SIXTY_FOUR_F) $(OPT)  $(DEBUG) -Dheliocentric -o # helicentric means that we keep the sun at (0,0,0)
+FFLAGS = $(SIXTY_FOUR_F) $(OPT)  $(DEBUG) $(HELIOCENTRIC_FLAG) -o # heliocentric means that we keep the sun at (0,0,0)
 FFLAGS2 = $(SIXTY_FOUR_F) $(OPT) $(DEBUG) -o # 
 VAR_TYPE = 1 # 0 single, 1 double
+
+# Backward-compatible compile-time frame switch.
+# The historical/default behaviour is HELIOCENTRIC=1, which defines
+# -Dheliocentric and keeps the Sun fixed at (0,0,0).
+HELIOCENTRIC ?= 1
+ifeq ($(strip $(HELIOCENTRIC)),1)
+HELIOCENTRIC_FLAG = -Dheliocentric
+else
+HELIOCENTRIC_FLAG =
+endif
 
 
 main.exe	:  odelib.a  solar_system.$(OBJ) 
