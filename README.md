@@ -383,9 +383,8 @@ the integrations.
 
 ### Planetary motion with mutual interactions
 
-```markdown
 ![Interacting Solar System animation](docs/figures/interacting_all.gif)
-```
+
 
 ### Solar barycentric wobble
 
